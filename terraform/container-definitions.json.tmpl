@@ -20,7 +20,7 @@
             }
         ],
         "essential": true,
-        "image": "705594476693.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate",
+        "image": ${jsonencode(docker_image)},
         "logConfiguration": {
             "logDriver": "awslogs",
             "options": {

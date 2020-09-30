@@ -14,14 +14,15 @@ resource "aws_ecs_cluster" "stateless" {
 }
 
 resource "aws_ecs_task_definition" "task-definition-test" {
-  family                = var.ecs_task_definition_family
+  family = var.ecs_task_definition_family
   container_definitions = templatefile("container-definitions.json.tmpl", {
+    docker_image   = var.docker_image
     log_group_name = aws_cloudwatch_log_group.log_group.name
   })
-  cpu                   = "4096"
-  execution_role_arn    = aws_iam_role.execution_role.arn
-  memory                = "8192"
-  network_mode          = "awsvpc"
+  cpu                = "4096"
+  execution_role_arn = aws_iam_role.execution_role.arn
+  memory             = "8192"
+  network_mode       = "awsvpc"
   requires_compatibilities = [
     "FARGATE",
   ]
@@ -62,8 +63,8 @@ resource "aws_ecs_service" "service" {
 
 }
 
-resource "aws_cloudwatch_log_group" "log_group" {    
-    name              = "/ecs/VideoConcat"
-    retention_in_days = 7
-    tags              = {}
+resource "aws_cloudwatch_log_group" "log_group" {
+  name              = "/ecs/VideoConcat"
+  retention_in_days = 7
+  tags              = {}
 }

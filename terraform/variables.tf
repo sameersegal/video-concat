@@ -18,3 +18,8 @@ variable "ecs_task_definition_family" {
   description = "Elastic Container Service Task Definition Family"
 }
 
+variable "docker_image" {
+  type        = string
+  description = "ARN of the docker image to be used"
+}
+
