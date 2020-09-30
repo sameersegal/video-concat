@@ -23,3 +23,7 @@ variable "docker_image" {
   description = "ARN of the docker image to be used"
 }
 
+variable "sqs_queue_name" {
+  type        = string
+  description = "SQS queue name"
+}

@@ -65,6 +65,6 @@ resource "aws_ecs_service" "service" {
 
 resource "aws_cloudwatch_log_group" "log_group" {
   name              = "/ecs/VideoConcat"
-  retention_in_days = 7
+  retention_in_days = 0
   tags              = {}
 }

@@ -47,3 +47,27 @@ resource "aws_iam_role" "execution_role" {
   tags                  = {}
 
 }
+
+resource "aws_iam_role" "lambda_execution_role" {
+  assume_role_policy = jsonencode(
+    {
+      Statement = [
+        {
+          "Action" : "sts:AssumeRole",
+          "Principal" : {
+            "Service" : "lambda.amazonaws.com"
+          },
+          "Effect" : "Allow",
+          "Sid" : ""
+        },
+      ]
+      Version = "2008-10-17"
+    }
+  )
+  force_detach_policies = false
+  max_session_duration  = 3600
+  name                  = "lambdaExecutionRole"
+  path                  = "/"
+  tags                  = {}
+
+}
