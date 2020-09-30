@@ -1,0 +1,37 @@
+[
+    {
+        "cpu": 0,
+        "environment": [
+            {
+                "name": "V_INPUT_FOLDER",
+                "value": "1yCnqTVGwwy4Tgtj9wZG3HIcb6b1dLLqg"
+            },
+            {
+                "name": "V_OUTPUT_FILE_PREFIX",
+                "value": "Short-Video-"
+            },
+            {
+                "name": "V_OUTPUT_FOLDER",
+                "value": "1IFMd9VssNjjLvduXwQM4j5lPHY7_6z6a"
+            },
+            {
+                "name": "V_SEQUENCE_FILE",
+                "value": "sequence"
+            }
+        ],
+        "essential": true,
+        "image": "705594476693.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate",
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": ${jsonencode(log_group_name)},
+                "awslogs-region": "ap-south-1",
+                "awslogs-stream-prefix": "ecs"
+            }
+        },
+        "mountPoints": [],
+        "name": "ss-video-concate",
+        "portMappings": [],
+        "volumesFrom": []
+    }
+]
