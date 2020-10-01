@@ -70,7 +70,10 @@ We assume you have an account with AWS. We assume you have a brief understanding
 
 5. Test your setup by creating a POST request to your API:
 
-    1. Find the input and output folder IDs. It's part that comes after the *folders* in a Google Drive link https://drive.google.com/drive/folders/XXXXXXXXXXXXXgtj9wZG3HIcb6b1dLLqg
+    1. Find the input and output folder IDs. It's part that comes after the *folders* in a Google Drive link
+    ```
+        https://drive.google.com/drive/folders/XXXXXXXXXXXXXgtj9wZG3HIcb6b1dLLqg
+    ```
     
     2. Create a sequence file by mention each file name on a separate line. Remember that the sequence file should be a simple text file and not Google Docs or Doc or Docx or any other complex format. (We will be doing `cat sequence` in our script.)
     ```
