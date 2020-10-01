@@ -91,7 +91,14 @@ We assume you have an account with AWS. We assume you have a brief understanding
     ```
     4. Check CloudWatch logs to see if there are any errors in Lambda or ECS. If not, you will be your video. 
 
-### Deep Dive
+### How does this work?
 
 ![Architecture Diagram](./diagram.png)
 
+1. User's `POST` request is passed on to a Lambda Function via API Gateway
+2. The Lambda Function posts an event to SQS Queue and updates the ECS service's desired count to 1
+3. The ECS container reads from the queue in a while loop, until there are no messages.
+4. The ECS container downloads all the files in the `input` folder. It expects the sequence file to be present here.
+5. It uses `ffmpeg` to concatenate the videos using [ffmpeg filters](https://ffmpeg.org/ffmpeg-filters.html#concat)
+6. It then pushes the final video to the `output` folder
+7. It then deletes the message from the queue, and checks for another message
