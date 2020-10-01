@@ -17,7 +17,10 @@ We assume you have an account with AWS. We assume you have a brief understanding
     2. Terraform downloaded
     3. Docker downloaded. On a Mac, `brew cask install docker` worked instead of the regular `brew install docker` 
 
-2. Build the infrastructure
+2. Generate a Service Account to access Google Drive
+    1. Follow the instructions [here](https://developers.google.com/identity/protocols/oauth2/service-account) to generate the json file and store it as `cotainer/credentials.json`
+
+3. Build the infrastructure
     1. The following commands have to be run in the `terraform` folder
         ```
             cd terraform
@@ -28,7 +31,7 @@ We assume you have an account with AWS. We assume you have a brief understanding
             ecs_cluster_name           = "ss-video-cluster"
             ecs_service_name           = "videoconcat-service"
             ecs_task_definition_family = "VideoConcat"
-            docker_image               = "705594476693.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate"
+            docker_image               = "XXXXXXXXXX.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate"
             sqs_queue_name             = "video-queue"
         ```
         Note: You may note have the docker_image just yet. Put in a dummy value () and then update it after running the docker steps.
@@ -42,6 +45,8 @@ We assume you have an account with AWS. We assume you have a brief understanding
 
     3. Note down the output variables from above
         ```
+            base_url = "https://XXXXXXXX.execute-api.ap-south-1.amazonaws.com/test"
+            queue_url = "https://sqs.ap-south-1.amazonaws.com/XXXXXXXXXXXX/video-queue"
         ```
 
 3. Create and publish the docker image
@@ -50,10 +55,41 @@ We assume you have an account with AWS. We assume you have a brief understanding
             docker build -t video-concat .
         ```
 
-    2. Follow the instructions on the ECR page to publish
+    2. Follow the instructions on the ECR page to publish. It will substitute variables correctly.
         ```
+            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin XXXXXXXXXX.dkr.ecr.ap-south-1.amazonaws.com
+            docker build -t ss-video-concate .
+            docker tag ss-video-concate:latest XXXXXXXXXX.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate:latest
+            docker push XXXXXXXXXX.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate:latest
+        ```
+    3. Copy the URI / ARN for the latest docker image and update the file `my.tfvars` created in step 3.2
+    
+4. And you are done! If you are stuck, keep repeating steps 3.1-3.3 to get the configuration right. 
 
-        ```
+5. Test your setup by creating a POST request to your API:
+
+    1. Find the input and output folder IDs. It's part that comes after the *folders* in a Google Drive link https://drive.google.com/drive/folders/XXXXXXXXXXXXXgtj9wZG3HIcb6b1dLLqg
+    
+    2. Create a sequence file by mention each file name on a separate line. Remember that the sequence file should be a simple text file and not Google Docs or Doc or Docx or any other complex format. (We will be doing `cat sequence` in our script.)
+    ```
+        Opening.mp4    
+        Video 1.mp4
+        Video 2.mp4        
+        Credits.mp4        
+    ```
+    
+    3. Generate the video by calling the API:
+    ```
+        curl --location --request POST 'https://XXXXXXXX.execute-api.ap-south-1.amazonaws.com/test/video-concat/' \
+            --header 'Content-Type: application/json' \
+            --data-raw '{
+                "input_folder": "XXXXXXXXXXTgtj9wZG3HIcb6b1dLLqg",
+                "output_folder": "XXXXXXXXXjjLvduXwQM4j5lPHY7_6z6a",
+                "sequence_file_name": "sequence",
+                "output_file_prefix": "Short-Video-"
+            }'
+    ```
+    4. Check CloudWatch logs to see if there are any errors in Lambda or ECS. If not, you will be your video. 
 
 ### Deep Dive
 
