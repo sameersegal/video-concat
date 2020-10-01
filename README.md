@@ -43,7 +43,7 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
             docker_image               = "XXXXXXXXXX.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate"
             sqs_queue_name             = "video-queue"
         ```
-        Note: You may note have the docker_image just yet. Put in a dummy value () and then update it after running the docker steps.
+        Note: You may not have the docker_image just yet. Put in a dummy value (like above) and then update it after running the docker steps.
 
     2. Run terraform
         ```            
@@ -101,7 +101,13 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
                 "output_file_prefix": "Short-Video-"
             }'
     ```
-    4. Check CloudWatch logs to see if there are any errors in Lambda or ECS. If not, you will be your video. 
+    4. Check CloudWatch logs to see if there are any errors in Lambda or ECS. If not, you will see your video in the `output` folder
+
+6. When done you can destroy your infrastructure:
+    ```
+        terraform plan --var-file="my.tfvars" -destroy -out=tfplan
+        terraform apply "tfplan"
+    ```
 
 ### How does this work?
 
