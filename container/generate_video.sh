@@ -1,24 +1,22 @@
 #!/bin/bash
 
-INPUT_FOLDER=$V_INPUT_FOLDER
-OUTPUT_FOLDER=$V_OUTPUT_FOLDER
-SEQUENCE_FILE=$V_SEQUENCE_FILE
-OUTPUT=$V_OUTPUT_FILE_PREFIX
+# named argument parsing
+for ARGUMENT in "$@"
+do
+    KEY=$(echo $ARGUMENT | cut -f1 -d=)
+    VALUE=$(echo $ARGUMENT | cut -f2 -d=)    
+    # echo "$KEY,$VALUE"
+    case "$KEY" in
+            --input-folder)            INPUT_FOLDER=${VALUE} ;;
+            --output-folder)           OUTPUT_FOLDER=${VALUE} ;;
+            --sequence-file-name)      SEQUENCE_FILE=${VALUE} ;;
+            --output-file-prefix)      OUTPUT=${VALUE} ;;     
+            *)   
+    esac    
+done
 
-# # named argument parsing
-# for ARGUMENT in "$@"
-# do
-#     KEY=$(echo $ARGUMENT | cut -f1 -d=)
-#     VALUE=$(echo $ARGUMENT | cut -f2 -d=)    
-#     echo "$KEY,$VALUE"
-#     case "$KEY" in
-#             --input-folder)          INPUT_FOLDER=${VALUE} ;;
-#             --output-folder)         OUTPUT_FOLDER=${VALUE} ;;
-#             --sequence)              SEQUENCE_FILE=${VALUE} ;;
-#             --output)                OUTPUT=${VALUE} ;;     
-#             *)   
-#     esac    
-# done
+mkdir temp
+cd temp
 
 # Downloading videos from the input folder
 gdrive --service-account credentials.json download query "'$INPUT_FOLDER' in parents" 
@@ -65,3 +63,6 @@ ffmpeg -i raw.mp4 -vcodec h264 -acodec aac $file
 
 # Uploading to Output folder
 gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file
+
+cd ..
+rm -rf temp

@@ -18,6 +18,8 @@ resource "aws_ecs_task_definition" "task-definition-test" {
   container_definitions = templatefile("container-definitions.json.tmpl", {
     docker_image   = var.docker_image
     log_group_name = aws_cloudwatch_log_group.log_group.name
+    queue_url = aws_sqs_queue.queue.id
+    region = "ap-south-1"
   })
   cpu                = "4096"
   execution_role_arn = aws_iam_role.execution_role.arn
