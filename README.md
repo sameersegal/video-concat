@@ -22,6 +22,13 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
     2. Remember to [enable](https://console.developers.google.com/apis/api/drive.googleapis.com/overview) Google Drive Apis for this service account.
     3. On the `output` Google Drive folder, remember to add the email of the Service Account as a collaborator with edit previleges. 
 
+3. Create the lambda function:
+    1. `npm install` in the lambda folder
+    2. zip and create the package
+        ```
+            zip ../trigger.zip main.js node_modules package.json
+        ```
+
 3. Build the infrastructure
     1. The following commands have to be run in the `terraform` folder
         ```
@@ -66,7 +73,7 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
         ```
     3. Copy the URI / ARN for the latest docker image and update the file `my.tfvars` created in step 3.2
     
-4. And you are done! If you are stuck, keep repeating steps 3.1-3.3 to get the configuration right. 
+4. And you are done! If you are stuck, keep repeating steps 4.1-4.3 to get the configuration right. 
 
 5. Test your setup by creating a POST request to your API:
 
