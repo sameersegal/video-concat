@@ -25,14 +25,14 @@ resource "aws_lambda_function" "trigger" {
 }
 
 resource "aws_lambda_permission" "apigw" {
-   statement_id  = "AllowAPIGatewayInvoke"
-   action        = "lambda:InvokeFunction"
-   function_name = aws_lambda_function.trigger.function_name
-   principal     = "apigateway.amazonaws.com"
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.trigger.function_name
+  principal     = "apigateway.amazonaws.com"
 
-   # The "/*/*" portion grants access from any method on any resource
-   # within the API Gateway REST API.
-   source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
+  # The "/*/*" portion grants access from any method on any resource
+  # within the API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*"
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {

@@ -27,3 +27,8 @@ variable "sqs_queue_name" {
   type        = string
   description = "SQS queue name"
 }
+
+variable "api_path" {
+  type        = string
+  description = "API path"
+}

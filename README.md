@@ -40,8 +40,9 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
             ecs_cluster_name           = "ss-video-cluster"
             ecs_service_name           = "videoconcat-service"
             ecs_task_definition_family = "VideoConcat"
-            docker_image               = "XXXXXXXXXX.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate"
+            docker_image               = "705594476693.dkr.ecr.ap-south-1.amazonaws.com/ss-video-concate"
             sqs_queue_name             = "video-queue"
+            api_path                   = "video-concat"
         ```
         Note: You may not have the docker_image just yet. Put in a dummy value (like above) and then update it after running the docker steps.
 
