@@ -19,6 +19,8 @@ We assume you have an account with AWS. We assume you have a brief understanding
 
 2. Generate a Service Account to access Google Drive
     1. Follow the instructions [here](https://developers.google.com/identity/protocols/oauth2/service-account) to generate the json file and store it as `cotainer/credentials.json`
+    2. Remember to enable Google Drive Apis for this service account.
+    3. On the `output` Google Drive folder, remember to add the email of the Service Account as a collaborator with edit previleges. 
 
 3. Build the infrastructure
     1. The following commands have to be run in the `terraform` folder
