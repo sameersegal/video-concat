@@ -8,18 +8,18 @@ Video processing takes time (CPU intensive) and a lot of space. On Mac Air, you 
 
 I have used Terraform to quickly bring up the infrastructure and destroy when I am done. It's perfect for infrequent use like Family events. 
 
-We assume you have an account with AWS. We assume you have a brief understanding of AWS, Terraform, Docker, etc
+I assume you have an account with AWS and have a brief understanding of AWS, Terraform, Docker, etc
 
 ## Get Started
 
 1. Ensure you have the pre-requisites:
-    1. AWS CLI downloaded and configured: `aws configure`
-    2. Terraform downloaded
-    3. Docker downloaded. On a Mac, `brew cask install docker` worked instead of the regular `brew install docker` 
+    1. AWS CLI [downloaded](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) and configured (`aws configure`) with significant previlige to create all the infrastructure. 
+    2. Terraform [downloaded](https://www.terraform.io/downloads.html) and in path. 
+    3. Docker [downloaded](https://www.docker.com/get-started). (On a Mac, `brew cask install docker` worked instead of the regular `brew install docker`)
 
 2. Generate a Service Account to access Google Drive
     1. Follow the instructions [here](https://developers.google.com/identity/protocols/oauth2/service-account) to generate the json file and store it as `cotainer/credentials.json`
-    2. Remember to enable Google Drive Apis for this service account.
+    2. Remember to [enable](https://console.developers.google.com/apis/api/drive.googleapis.com/overview) Google Drive Apis for this service account.
     3. On the `output` Google Drive folder, remember to add the email of the Service Account as a collaborator with edit previleges. 
 
 3. Build the infrastructure
@@ -107,3 +107,14 @@ We assume you have an account with AWS. We assume you have a brief understanding
 5. It uses `ffmpeg` to concatenate the videos using [ffmpeg filters](https://ffmpeg.org/ffmpeg-filters.html#concat)
 6. It then pushes the final video to the `output` folder
 7. It then deletes the message from the queue, and checks for another message
+
+### Further Reading
+
+I found the following tutorials and articles very helfpul while working on this project:
+
+1. [Better Together: Amazon ECS and AWS Lambda | AWS Compute Blog](https://aws.amazon.com/blogs/compute/better-together-amazon-ecs-and-aws-lambda/)
+2. [How to manage Terraform state. A guide to file layout, isolation, and… | by Yevgeniy Brikman | Gruntwork](https://blog.gruntwork.io/how-to-manage-terraform-state-28f5697e68fa)
+3. [Copy all files in a folder from Google Drive to AWS S3 (Example)](https://coderwall.com/p/rckamw/copy-all-files-in-a-folder-from-google-drive-to-aws-s3)
+4. [Docker Images : Part I - Reducing Image Size](https://www.ardanlabs.com/blog/2020/02/docker-images-part1-reducing-image-size.html)
+5. [Fargate as Batch Service. AWS Fargate can be a useful service for… | by Ava Chen | Aug, 2020 | Medium](https://medium.com/@avachen2005/fargate-as-batch-service-31a896ec1917)
+6. [Serverless Applications with AWS Lambda and API Gateway | Terraform - HashiCorp Learn](https://learn.hashicorp.com/tutorials/terraform/lambda-api-gateway)
