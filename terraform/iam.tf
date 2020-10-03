@@ -48,6 +48,40 @@ resource "aws_iam_role" "execution_role" {
 
 }
 
+resource "aws_iam_policy" "task_execution_policy" {
+  name        = "task_execution_policy"
+  path        = "/"
+  description = "IAM policy for the task - SQS"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [    
+    {
+      "Effect": "Allow",
+      "Action": "sqs:*",
+      "Resource": "${aws_sqs_queue.queue.arn}"
+   }   
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment" {
+  role       = aws_iam_role.task_role.name
+  policy_arn = aws_iam_policy.task_execution_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attachment" {
+  role       = aws_iam_role.execution_role.name
+  policy_arn = aws_iam_policy.task_execution_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "ecs-task-execution-role-policy-attachment" {
+  role       = aws_iam_role.execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
   assume_role_policy = jsonencode(
     {
@@ -59,7 +93,7 @@ resource "aws_iam_role" "lambda_execution_role" {
           },
           "Effect" : "Allow",
           "Sid" : ""
-        },
+        }
       ]
       Version = "2008-10-17"
     }
@@ -71,3 +105,4 @@ resource "aws_iam_role" "lambda_execution_role" {
   tags                  = {}
 
 }
+

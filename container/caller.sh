@@ -25,8 +25,8 @@ while [ /bin/true ]; do
     else
         echo "Message: ${result}."
 
-        # receipt_handle=$(echo ${result} | sed -e 's/^.*"\([^"]*\)"\s*\]$/\1/')
-        # echo "Receipt handle: ${receipt_handle}."
+        receipt_handle=$(echo ${result} | sed -e 's/^.*"\([^"]*\)"\s*\]$/\1/')
+        echo "Receipt handle: ${receipt_handle}."
 
         input_folder=$(echo ${result} | sed -e 's/^.*\\"input_folder\\":\s*\\"\([^\\]*\)\\".*$/\1/')
         echo "Input Folder: ${input_folder}."
@@ -40,26 +40,26 @@ while [ /bin/true ]; do
         output_file_prefix=$(echo ${result} | sed -e 's/^.*\\"output_file_prefix\\":\s*\\"\([^\\]*\)\\".*$/\1/')
         echo "Output File Prefix: ${output_file_prefix}."
 
-        if [ -n "$result" ] \
-        && [ -n "$receipt_handle" ] \
-        && [ -n "$input_folder" ] \
-        && [ -n "$output_folder" ] \
-        && [ -n "$sequence_file_name" ] \
-        && [ -n "$output_file_prefix" ]; then
+        # if [ -n "$result" ] \
+        # && [ -n "$receipt_handle" ] \
+        # && [ -n "$input_folder" ] \
+        # && [ -n "$output_folder" ] \
+        # && [ -n "$sequence_file_name" ] \
+        # && [ -n "$output_file_prefix" ]; then
 
-            ./generate_video.sh --input-folder=$input_folder \
-                                --output_folder=$output_folder \
-                                --sequence-file-name=$sequence_file_name \
-                                --output-file-prefix=$output_file_prefix
+        ./generate_video.sh --input-folder=$input_folder \
+                            --output_folder=$output_folder \
+                            --sequence-file-name=$sequence_file_name \
+                            --output-file-prefix=$output_file_prefix
 
-            echo "Deleting message..."
-            aws sqs delete-message \
-                --queue-url ${queue} \
-                --region ${region} \
-                --receipt-handle "${receipt_handle}"
+        echo "Deleting message..."
+        aws sqs delete-message \
+            --queue-url ${queue} \
+            --region ${region} \
+            --receipt-handle "${receipt_handle}"
 
-        else
-            echo "ERROR: Could not extract params from message from SQS message."
-        fi
+        # else
+        #     echo "ERROR: Could not extract params from message from SQS message."
+        # fi
     fi
 done

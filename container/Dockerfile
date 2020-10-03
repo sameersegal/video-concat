@@ -10,7 +10,5 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	unzip 
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip" && unzip awscliv2.zip && ./aws/install && rm -rf aws*
-COPY caller.sh . 
-COPY generate_video.sh . 
-RUN chmod +x generate_video.sh caller.sh
+COPY *.sh /tmp/workdir/
 ENTRYPOINT ["./caller.sh"]

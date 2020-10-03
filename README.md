@@ -132,3 +132,6 @@ I found the following tutorials and articles very helfpul while working on this 
 4. [Docker Images : Part I - Reducing Image Size](https://www.ardanlabs.com/blog/2020/02/docker-images-part1-reducing-image-size.html)
 5. [Fargate as Batch Service. AWS Fargate can be a useful service for… | by Ava Chen | Aug, 2020 | Medium](https://medium.com/@avachen2005/fargate-as-batch-service-31a896ec1917)
 6. [Serverless Applications with AWS Lambda and API Gateway | Terraform - HashiCorp Learn](https://learn.hashicorp.com/tutorials/terraform/lambda-api-gateway)
+7. [Why does AWS Lambda need to pass ecsTaskExecutionRole to ECS task](https://serverfault.com/questions/945596/why-does-aws-lambda-need-to-pass-ecstaskexecutionrole-to-ecs-task)
+    * https://stackoverflow.com/questions/58686844/ecs-task-not-starting-stopped-cannotpullcontainererror-error-response-from
+    * https://medium.com/@paweldudzinski/creating-aws-ecs-cluster-of-ec2-instances-with-terraform-893c15d1116

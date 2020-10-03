@@ -58,7 +58,22 @@ resource "aws_iam_policy" "lambda_logging" {
       ],
       "Resource": "arn:aws:logs:*:*:*",
       "Effect": "Allow"
-    }
+    },
+    {
+      "Effect": "Allow",
+      "Action": "sqs:*",
+      "Resource": "${aws_sqs_queue.queue.arn}"
+   },
+   {
+      "Effect": "Allow",
+      "Action": "ecs:*",
+      "Resource": "*"
+   },
+   {   
+      "Effect": "Allow",
+      "Action": [ "iam:PassRole" ],
+      "Resource": [ "${aws_iam_role.execution_role.arn}"]
+   }
   ]
 }
 EOF
