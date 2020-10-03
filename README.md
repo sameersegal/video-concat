@@ -26,7 +26,7 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
     1. `npm install` in the lambda folder
     2. zip and create the package
         ```
-            zip ../trigger.zip main.js node_modules package.json
+            zip -r ../trigger.zip main.js node_modules package.json
         ```
 
 3. Build the infrastructure
