@@ -1,4 +1,4 @@
-resource "aws_ecs_cluster" "stateless" {
+resource "aws_ecs_cluster" "cluster" {
   name = var.ecs_cluster_name
   capacity_providers = [
     "FARGATE",
@@ -13,7 +13,7 @@ resource "aws_ecs_cluster" "stateless" {
 
 }
 
-resource "aws_ecs_task_definition" "task-definition-test" {
+resource "aws_ecs_task_definition" "task" {
   family = var.ecs_task_definition_family
   container_definitions = templatefile("container-definitions.json.tmpl", {
     docker_image   = var.docker_image
@@ -34,20 +34,20 @@ resource "aws_ecs_task_definition" "task-definition-test" {
 
 resource "aws_ecs_service" "service" {
   name                               = var.ecs_service_name
-  cluster                            = aws_ecs_cluster.stateless.id
+  cluster                            = aws_ecs_cluster.cluster.id
   deployment_maximum_percent         = 200
   deployment_minimum_healthy_percent = 100
   desired_count                      = 0
   enable_ecs_managed_tags            = false
   health_check_grace_period_seconds  = 0
-  iam_role                           = "aws-service-role"
+  #iam_role                           = "aws-service-role"
   #  #depends_on                         = ["aws-service-role"]
   launch_type = "FARGATE"
 
   platform_version    = "LATEST"
   scheduling_strategy = "REPLICA"
   tags                = {}
-  task_definition     = aws_ecs_task_definition.task-definition-test.arn
+  task_definition     = aws_ecs_task_definition.task.arn
 
   deployment_controller {
     type = "ECS"
@@ -66,7 +66,7 @@ resource "aws_ecs_service" "service" {
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {
-  name              = "/ecs/VideoConcat"
+  name              = var.ecs_log_group_name
   retention_in_days = 0
   tags              = {}
 }

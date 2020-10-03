@@ -32,3 +32,13 @@ variable "api_path" {
   type        = string
   description = "API path"
 }
+
+variable "ecs_log_group_name" {
+  type        = string
+  description = "ECS log group name"
+}
+
+variable "sg_name" {
+  type        = string
+  description = "Security Group name"
+}

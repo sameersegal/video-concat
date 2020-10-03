@@ -14,7 +14,7 @@ resource "aws_lambda_function" "trigger" {
   environment {
     variables = {
       QUEUE_URL = aws_sqs_queue.queue.id
-      TASK_NAME = aws_ecs_task_definition.task-definition-test.family
+      TASK_NAME = aws_ecs_task_definition.task.family
     }
   }
 
