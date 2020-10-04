@@ -13,51 +13,51 @@ resource "aws_ecs_cluster" "cluster" {
 
 }
 
-resource "aws_ecs_cluster" "cluster2" {
-  
-    capacity_providers = [
-        "FARGATE",
-        "FARGATE_SPOT",
-    ]
+#resource "aws_ecs_cluster" "cluster2" {
+#  
+#    capacity_providers = [
+#        "FARGATE",
+#        "FARGATE_SPOT",
+#    ]
+#
+#    name               = "ss-video-2"
+#    tags               = {}
+#
+#    setting {
+#        name  = "containerInsights"
+#        value = "enabled"
+#    }
+#}
 
-    name               = "ss-video-2"
-    tags               = {}
-
-    setting {
-        name  = "containerInsights"
-        value = "enabled"
-    }
-}
-
-resource "aws_ecs_service" "service2" {    
-    deployment_maximum_percent         = 200
-    deployment_minimum_healthy_percent = 100
-    desired_count                      = 0
-    enable_ecs_managed_tags            = false
-    health_check_grace_period_seconds  = 0
-    launch_type                        = "FARGATE"
-    name                               = "ss-video-2-service"
-    platform_version                   = "LATEST"
-    scheduling_strategy                = "REPLICA"
-    tags                               = {}
-    task_definition                    = "VideoConcat:8"
-
-    deployment_controller {
-        type = "ECS"
-    }
-
-    network_configuration {
-        assign_public_ip = true
-        security_groups  = [
-            "sg-08ea64fc68fd68f36",
-        ]
-        subnets          = [
-            "subnet-0d6fd0eab8ba93a6e",
-        ]
-    }
-
-    timeouts {}
-}
+#resource "aws_ecs_service" "service2" {    
+#    deployment_maximum_percent         = 200
+#    deployment_minimum_healthy_percent = 100
+#    desired_count                      = 0
+#    enable_ecs_managed_tags            = false
+#    health_check_grace_period_seconds  = 0
+#    launch_type                        = "FARGATE"
+#    name                               = "ss-video-2-service"
+#    platform_version                   = "LATEST"
+#    scheduling_strategy                = "REPLICA"
+#    tags                               = {}
+#    task_definition                    = "VideoConcat:8"
+#
+#    deployment_controller {
+#        type = "ECS"
+#    }
+#
+#    network_configuration {
+#        assign_public_ip = true
+#        security_groups  = [
+#            "sg-08ea64fc68fd68f36",
+#        ]
+#        subnets          = [
+#            "subnet-0d6fd0eab8ba93a6e",
+#        ]
+#    }
+#
+#    timeouts {}
+#}
 
 resource "aws_ecs_task_definition" "task" {
   family = var.ecs_task_definition_family
@@ -113,6 +113,6 @@ resource "aws_ecs_service" "service" {
 
 resource "aws_cloudwatch_log_group" "log_group" {
   name              = var.ecs_log_group_name
-  retention_in_days = 7
+  retention_in_days = 1 
   tags              = {}
 }
