@@ -21,7 +21,7 @@ do
 done
 
 # Downloading videos from the input folder
-if [[ "$SKIP_DOWNLOAD" -ne "true" ]]; 
+if [ -z "$SKIP_DOWNLOAD" ] || [ "$SKIP_DOWNLOAD" -ne "true" ]; 
 then
     mkdir -p temp
     cd temp
@@ -81,7 +81,7 @@ ffmpeg -i raw.mp4 -filter:a loudnorm $file
 
 if [[ -f "$file" ]]; 
 then 
-    if [[ "$SKIP_UPLOAD" -ne "true" ]]; then
+    if [ -z "$SKIP_UPLOAD" ] || [ "$SKIP_UPLOAD" -ne "true" ];  then
         # Uploading to Output folder
         echo "Uploading file: $file"
         echo "gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file"
