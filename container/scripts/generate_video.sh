@@ -11,6 +11,7 @@ do
     case "$KEY" in
             --input-folder)            INPUT_FOLDER=${VALUE} ;;
             --output-folder)           OUTPUT_FOLDER=${VALUE} ;;
+            --template-file-name)      TEMPLATE_FILE=${VALUE} ;;
             --sequence-file-name)      SEQUENCE_FILE=${VALUE} ;;
             --output-file-prefix)      OUTPUT=${VALUE} ;;     
             *)   
@@ -23,62 +24,55 @@ cd temp
 # Downloading videos from the input folder
 gdrive --service-account credentials.json download query "'$INPUT_FOLDER' in parents" 
 
-count=0
-i=0
-inputs=""
-filter_complex=""
-while IFS="" read -r p || [ -n "$p" ]
+TEMPLATE=`cat $TEMPLATE_FILE`
+
+exec 3< "$SEQUENCE_FILE"
+
+i=1
+while IFS=$'\t' read -u 3 -r -a line
 do
-  #printf '%s\n' "$p"
-  if [[ -f "$p" ]]
-    then     
-                  
-        # Checking if it contains Audio and Video streams
-        isAudio=`ffmpeg -i "$p" 2>&1 | grep Audio`
-        isVideo=`ffmpeg -i "$p" 2>&1 | grep Video`
+    arg1=${line[0]}
+    arg2=${line[1]}
+    arg3=${line[2]}
+    arg4=${line[3]}
+    arg5=${line[4]}
+    arg6=${line[5]}
 
-        arg=""
-        if [ -n "$isAudio" ] && [ -n "$isVideo" ]; then
-            arg="[$i:v] [$i:a]"
-            filter_complex="$filter_complex $arg"
-            ((count++))
-            ((i++))
+    echo "${arg1}|${arg2}|${arg3}|${arg4}|${arg5}|${arg6}"
+    rm "${i}.ts"
 
-            inputs="$inputs -i \"$p\""
-        elif [ -n isVideo ]; then
-            arg="[$i:v]"     
-            echo "$p does not have an audio stream"
-        fi
-        
+    t=`echo "$TEMPLATE" | sed 's@$i@'"$i"'@g' | sed 's@$arg1@'"$arg1"'@g' | sed 's@$arg2@'"$arg2"'@g' | sed 's@$arg3@'"$arg3"'@g' | sed 's@$arg4@'"$arg4"'@g' | sed 's@$arg5@'"$arg5"'@g' | sed 's@$arg6@'"$arg6"'@g'`
+    eval "$t"
+
+    ((i=i+1))
+ 
+done
+
+exec 3<&-
+
+
+concatscript="concat:"
+for (( c=1; c<i; c++ ));
+do
+    f="${c}.ts"
+    if [[ -f "$f" ]]; then
+        concatscript="${concatscript}${f}|"
     else
-        echo "$p does not exist on your filesystem"        
-    fi
-done < $SEQUENCE_FILE
+        echo "${f} is missing"    
+    fi    
+done
 
-if [ -n "$inputs" ]; then
-    # Generating the ffmpeg concat command
-    cmd="ffmpeg $inputs"
-    cmd="$cmd -filter_complex \"$filter_complex"
-    cmd="$cmd concat=n=$count:v=1:a=1 [v] [a]\""
-    cmd="$cmd -map \"[v]\" -map \"[a]\""
-    cmd="$cmd raw.mp4"
+d=`date +%d%h-%H%M.mp4`
+file="$OUTPUT$d"
 
-    echo $cmd
-    eval $cmd
+cmd=`echo "ffmpeg -i \"${concatscript}\" -vcodec h264 -acodec $file"`
+eval "$cmd"
 
-    d=`date +%d%h-%H%M.mp4`
-    file="$OUTPUT$d"
-
-    # Creates a compressed video
-    ffmpeg -i raw.mp4 -vcodec h264 -acodec aac $file
-
+if [[ -f "$file" ]]; 
+then 
     # Uploading to Output folder
     gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file
-
-else
-    echo "No video file to process"
 fi
 
-
 cd ..
-#rm -rf temp
+rm -rf temp
