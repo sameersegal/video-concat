@@ -51,7 +51,7 @@ while [ /bin/true ]; do
         # && [ -n "$output_file_prefix" ]; then
 
         ./generate_video.sh --input-folder=$input_folder \
-                            --output_folder=$output_folder \
+                            --output-folder=$output_folder \
                             --sequence-file-name=$sequence_file_name \
                             --template-file-name=$template_file_name \
                             --output-file-prefix=$output_file_prefix

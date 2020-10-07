@@ -14,15 +14,22 @@ do
             --template-file-name)      TEMPLATE_FILE=${VALUE} ;;
             --sequence-file-name)      SEQUENCE_FILE=${VALUE} ;;
             --output-file-prefix)      OUTPUT=${VALUE} ;;     
+            --skip-download)           SKIP_DOWNLOAD=${VALUE} ;;     
+            --skip-upload)             SKIP_UPLOAD=${VALUE} ;;     
             *)   
     esac    
 done
 
-mkdir -p temp
-cd temp
-
 # Downloading videos from the input folder
-gdrive --service-account credentials.json download query "'$INPUT_FOLDER' in parents" 
+if [[ "$SKIP_DOWNLOAD" -ne "true" ]]; 
+then
+    mkdir -p temp
+    cd temp
+    gdrive --service-account credentials.json download query "'$INPUT_FOLDER' in parents" 
+else
+    cd temp
+    echo "Not downloading file based on flag $SKIP_DOWNLOAD"
+fi
 
 TEMPLATE=`cat $TEMPLATE_FILE`
 
@@ -42,6 +49,7 @@ do
     rm "${i}.ts"
 
     t=`echo "$TEMPLATE" | sed 's@$i@'"$i"'@g' | sed 's@$arg1@'"$arg1"'@g' | sed 's@$arg2@'"$arg2"'@g' | sed 's@$arg3@'"$arg3"'@g' | sed 's@$arg4@'"$arg4"'@g' | sed 's@$arg5@'"$arg5"'@g' | sed 's@$arg6@'"$arg6"'@g'`
+    echo "$t"
     eval "$t"
 
     ((i=i+1))
@@ -62,18 +70,27 @@ do
     fi    
 done
 
-d=`date +%d%h-%H%M.mp4`
-file="$OUTPUT$d"
-
-cmd=`echo "ffmpeg -i \"${concatscript}\" -vcodec h264 -acodec $file"`
+cmd=`echo "ffmpeg -i \"${concatscript}\" -vcodec h264 -acodec aac raw.mp4"`
 echo "$cmd"
 eval "$cmd"
 
+d=`date +%d%h-%H%M.mp4`
+file="$OUTPUT$d"
+
+ffmpeg -i raw.mp4 -filter:a loudnorm $file
+
 if [[ -f "$file" ]]; 
 then 
-    # Uploading to Output folder
-    gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file
-fi
+    if [[ "$SKIP_UPLOAD" -ne "true" ]]; then
+        # Uploading to Output folder
+        echo "Uploading file: $file"
+        echo "gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file"
+        gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file
 
-cd ..
-rm -rf temp
+        cd ..
+        rm -rf temp
+    else
+        echo "Not uploading file based on flag $SKIP_UPLOAD"
+        cd ..
+    fi
+fi
