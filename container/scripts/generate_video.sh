@@ -66,6 +66,7 @@ d=`date +%d%h-%H%M.mp4`
 file="$OUTPUT$d"
 
 cmd=`echo "ffmpeg -i \"${concatscript}\" -vcodec h264 -acodec $file"`
+echo "$cmd"
 eval "$cmd"
 
 if [[ -f "$file" ]]; 

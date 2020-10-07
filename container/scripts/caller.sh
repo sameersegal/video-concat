@@ -37,6 +37,9 @@ while [ /bin/true ]; do
         sequence_file_name=$(echo ${result} | sed -e 's/^.*\\"sequence_file_name\\":\s*\\"\([^\\]*\)\\".*$/\1/')
         echo "Sequence File Name: ${sequence_file_name}."
 
+        template_file_name=$(echo ${result} | sed -e 's/^.*\\"template_file_name\\":\s*\\"\([^\\]*\)\\".*$/\1/')
+        echo "Template File Name: ${template_file_name}."
+
         output_file_prefix=$(echo ${result} | sed -e 's/^.*\\"output_file_prefix\\":\s*\\"\([^\\]*\)\\".*$/\1/')
         echo "Output File Prefix: ${output_file_prefix}."
 
@@ -50,7 +53,9 @@ while [ /bin/true ]; do
         ./generate_video.sh --input-folder=$input_folder \
                             --output_folder=$output_folder \
                             --sequence-file-name=$sequence_file_name \
+                            --template-file-name=$template_file_name \
                             --output-file-prefix=$output_file_prefix
+                            
 
         echo "Deleting message..."
         aws sqs delete-message \
