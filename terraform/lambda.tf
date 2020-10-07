@@ -14,7 +14,10 @@ resource "aws_lambda_function" "trigger" {
   environment {
     variables = {
       QUEUE_URL = aws_sqs_queue.queue.id
-      TASK_NAME = aws_ecs_task_definition.task.family
+      CLUSTER_NAME = aws_ecs_cluster.cluster.name
+      TASK_NAME = "${aws_ecs_task_definition.task.family}:${aws_ecs_task_definition.task.revision}"
+      SUBNET = aws_subnet.main.id
+      SECURITY_GROUP = aws_security_group.simple.id
     }
   }
 

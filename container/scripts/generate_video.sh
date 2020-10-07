@@ -21,7 +21,7 @@ do
 done
 
 # Downloading videos from the input folder
-if [ -z "$SKIP_DOWNLOAD" ] || [ "$SKIP_DOWNLOAD" -ne "true" ]; 
+if [ -z "$SKIP_DOWNLOAD" ] || [ "$SKIP_DOWNLOAD" != "true" ]; 
 then
     mkdir -p temp
     cd temp
@@ -70,18 +70,16 @@ do
     fi    
 done
 
-cmd=`echo "ffmpeg -i \"${concatscript}\" -vcodec h264 -acodec aac raw.mp4"`
-echo "$cmd"
-eval "$cmd"
-
 d=`date +%d%h-%H%M.mp4`
 file="$OUTPUT$d"
 
-ffmpeg -i raw.mp4 -filter:a loudnorm $file
+cmd=`echo "ffmpeg -i \"${concatscript}\" -filter:a loudnorm -vcodec h264 -acodec aac $file"`
+echo "$cmd"
+eval "$cmd"
 
 if [[ -f "$file" ]]; 
 then 
-    if [ -z "$SKIP_UPLOAD" ] || [ "$SKIP_UPLOAD" -ne "true" ];  then
+    if [ -z "$SKIP_UPLOAD" ] || [ "$SKIP_UPLOAD" != "true" ];  then
         # Uploading to Output folder
         echo "Uploading file: $file"
         echo "gdrive --service-account credentials.json upload --parent $OUTPUT_FOLDER $file"

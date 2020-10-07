@@ -11,7 +11,11 @@ exports.handler = function(event, context, callback) {
 
     var inputs = JSON.parse(event.body);
     let QUEUE_URL = process.env.QUEUE_URL
+    let CLUSTER_NAME = process.env.CLUSTER_NAME
     let TASK_NAME = process.env.TASK_NAME
+    let SUBNET = process.env.SUBNET
+    let SECURITY_GROUP = process.env.SECURITY_GROUP
+
 
     async.waterfall([
           function (next) {
@@ -28,8 +32,22 @@ exports.handler = function(event, context, callback) {
           function (next) {
               // Starts an ECS task to work through the feeds.
               var params = {
+                  cluster: CLUSTER_NAME,
                   taskDefinition: TASK_NAME,
-                  count: 1
+                  count: 1,
+                  launchType: 'FARGATE',
+                  platformVersion: 'LATEST',
+                  networkConfiguration: {
+                    'awsvpcConfiguration': {
+                      'subnets': [
+                          SUBNET
+                      ],
+                      'securityGroups': [
+                          SECURITY_GROUP
+                      ],
+                      'assignPublicIp': 'ENABLED'
+                  }
+                  }
               };
               ecs.runTask(params, function (err, data) {
                   if (err) { console.warn('error: ', "Error while starting task: " + err); }
