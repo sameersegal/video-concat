@@ -106,3 +106,28 @@ resource "aws_iam_role" "lambda_execution_role" {
 
 }
 
+resource "aws_iam_policy" "lambda_assume_role_for_ecs_policy" {
+  name        = "lambda_assume_role_for_ecs_policy"
+  path        = "/"
+  description = "IAM policy for lambda - ECS"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [    
+    {
+          "Effect": "Allow",
+          "Action": [
+              "iam:PassRole"
+          ],
+          "Resource": "${aws_iam_role.task_role.arn}"
+        }   
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ecs_role_policy_attachment" {
+  role       = aws_iam_role.lambda_execution_role.name
+  policy_arn = aws_iam_policy.lambda_assume_role_for_ecs_policy.arn
+}

@@ -113,6 +113,6 @@ resource "aws_ecs_service" "service" {
 
 resource "aws_cloudwatch_log_group" "log_group" {
   name              = var.ecs_log_group_name
-  retention_in_days = 1 
+  retention_in_days = 1
   tags              = {}
 }

@@ -62,6 +62,9 @@ done
 # Close file descriptor
 exec 3<&-
 
+# Creating space on the container as we are done with all the inputs
+find . -type f -not -name '*.ts' | xargs rm -rf
+
 # The number of files that we need to concat. This will change if we are using intermediary files
 concat_counter=$i
 count=$i
