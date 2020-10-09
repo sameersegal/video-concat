@@ -122,6 +122,45 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
 6. It then pushes the final video to the `output` folder
 7. It then deletes the message from the queue, and checks for another message
 
+### Example Sequence & Templates
+
+```
+Beginning Video with Music.mp4
+Mom \& Dad.mp4
+Relative1.mov	Name 1	mandala2.png	#032B60	SN2s.jpg
+Relative2.MOV	Name 2	mandala2.png	#8F3A6F	SN14s.jpg
+Relative3.mov	Name 3	mandala1.png	#70094A	SN14s.jpg
+Relative4.mov	Name 4	mandala2.png	#3750A8	SN13s.jpg
+Relative5.mp4	Name 5	mandala3.png	#A67761	SN1s.jpg
+Relative6.mp4	Name 6	mandala3.png	#A67761	SN1s.jpg
+Ending Video with Music.mp4
+
+```
+
+```
+if [[ -z "$arg3" ]];
+then 
+
+    ffmpeg -hide_banner -i "$arg1" -t 10 \
+    -c:a aac -c:v libx264 -crf 23 \
+    -filter_complex "[0:v]scale=1920x1080:force_original_aspect_ratio=decrease,pad=1920:1080:0:0:color=black, \
+    setdar=16/9,setsar=1/1,fps=fps=30,format=yuv420p; \
+    [0:a]loudnorm=i=-24:tp=-2:lra=7" \
+    "$i.ts"
+
+else
+
+    ffmpeg -hide_banner -i "$arg1" -t 10 -i $arg3 -i $arg5 \
+    -filter_complex "[0:v]scale=1600:900:force_original_aspect_ratio=decrease,pad=1920:1080:320:0:color=$arg4,setdar=16/9,setsar=1/1,fps=fps=30,format=yuv420p[V1]; \
+    [V1][1:v]overlay=(overlay_w/2)*-1+40:main_h-(overlay_h/2)-40[V2]; \
+    [V2][2:v]overlay=0:450-(overlay_h/2)[V3]; \
+    [V3]drawtext=fontfile=./Sanchez-Regular.ttf: text='$arg2': fontcolor=white: fontsize=64: x=(w-text_w)/2: y=(h-90-(text_h/2)); \
+    [0:a]loudnorm=i=-24:tp=-2:lra=7" \
+    -c:a aac -c:v libx264 -crf 23 \
+    "$i.ts"
+fi
+```
+
 ### Further Reading
 
 I found the following tutorials and articles very helfpul while working on this project:
