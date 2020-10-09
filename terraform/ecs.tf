@@ -13,52 +13,6 @@ resource "aws_ecs_cluster" "cluster" {
 
 }
 
-#resource "aws_ecs_cluster" "cluster2" {
-#  
-#    capacity_providers = [
-#        "FARGATE",
-#        "FARGATE_SPOT",
-#    ]
-#
-#    name               = "ss-video-2"
-#    tags               = {}
-#
-#    setting {
-#        name  = "containerInsights"
-#        value = "enabled"
-#    }
-#}
-
-#resource "aws_ecs_service" "service2" {    
-#    deployment_maximum_percent         = 200
-#    deployment_minimum_healthy_percent = 100
-#    desired_count                      = 0
-#    enable_ecs_managed_tags            = false
-#    health_check_grace_period_seconds  = 0
-#    launch_type                        = "FARGATE"
-#    name                               = "ss-video-2-service"
-#    platform_version                   = "LATEST"
-#    scheduling_strategy                = "REPLICA"
-#    tags                               = {}
-#    task_definition                    = "VideoConcat:8"
-#
-#    deployment_controller {
-#        type = "ECS"
-#    }
-#
-#    network_configuration {
-#        assign_public_ip = true
-#        security_groups  = [
-#            "sg-08ea64fc68fd68f36",
-#        ]
-#        subnets          = [
-#            "subnet-0d6fd0eab8ba93a6e",
-#        ]
-#    }
-#
-#    timeouts {}
-#}
-
 resource "aws_ecs_task_definition" "task" {
   family = var.ecs_task_definition_family
   container_definitions = templatefile("container-definitions.json.tmpl", {
@@ -86,11 +40,9 @@ resource "aws_ecs_service" "service" {
   desired_count                      = 0
   enable_ecs_managed_tags            = false
   health_check_grace_period_seconds  = 0
-  #iam_role                           = "aws-service-role"
-  #  #depends_on                         = ["aws-service-role"]
   launch_type = "FARGATE"
 
-  platform_version    = "LATEST"
+  platform_version    = "1.4.0"
   scheduling_strategy = "REPLICA"
   tags                = {}
   task_definition     = aws_ecs_task_definition.task.arn

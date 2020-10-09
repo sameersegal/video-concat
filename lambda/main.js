@@ -36,7 +36,7 @@ exports.handler = function(event, context, callback) {
                   taskDefinition: TASK_NAME,
                   count: 1,
                   launchType: 'FARGATE',
-                  platformVersion: 'LATEST',
+                  platformVersion: '1.4.0',
                   networkConfiguration: {
                     'awsvpcConfiguration': {
                       'subnets': [
