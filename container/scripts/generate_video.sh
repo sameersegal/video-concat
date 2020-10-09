@@ -18,6 +18,9 @@ do
     esac    
 done
 
+echo "Check space #when new"
+df -h .
+
 # Downloading videos from the input folder
 if [ -z "$SKIP_DOWNLOAD" ] || [ "$SKIP_DOWNLOAD" != "true" ]; 
 then
@@ -62,14 +65,28 @@ done
 # Close file descriptor
 exec 3<&-
 
+echo "Check space #download before delete"
+df -h .
+
 # Creating space on the container as we are done with all the inputs
-find . -type f -not -name '*.ts' | xargs rm -rf
+
+if [ -z "$SKIP_DOWNLOAD" ] || [ "$SKIP_DOWNLOAD" != "true" ]; 
+then    
+    echo "Making space based on flag"
+    find . -type f -not -name '*.ts' | xargs rm -rf
+else
+    echo "NOT making space based on flag"
+fi
+
+echo "Check space #after delete"
+df -h .
+
 
 # The number of files that we need to concat. This will change if we are using intermediary files
 concat_counter=$i
 count=$i
 # Max number of files to concat at a time
-STEP=25
+STEP=200
 format=".ts"
 
 # If there are too many inputs files to concat, we need to create intermediary files
@@ -113,12 +130,12 @@ else
 fi
 
 # Generate concat command
-concatscript="concat:"
+concatscript=""
 for (( c=1; c<concat_counter; c++ ));
 do
     f="${c}${format}"
     if [[ -f "$f" ]]; then
-        concatscript="${concatscript}${f}|"
+        concatscript="${concatscript} -i ${f}"
     else
         echo "${f} is missing"    
     fi    
@@ -128,7 +145,7 @@ done
 d=`date +%d%h-%H%M.mp4`
 file="$OUTPUT$d"
 
-cmd=`echo "ffmpeg -i \"${concatscript}\" -filter:a loudnorm -vcodec h264 -acodec aac $file"`
+cmd=`echo "ffmpeg -i \"${concatscript}\" -filter_complex \"concat=n=${concat_counter}:v=1:a=1 [v] [a]\" -map \"[v]\" -map \"[a]\" $file"`
 echo "$cmd"
 eval "$cmd"
 
