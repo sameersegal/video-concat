@@ -43,6 +43,12 @@ while [ /bin/true ]; do
         output_file_prefix=$(echo ${result} | sed -e 's/^.*\\"output_file_prefix\\":\s*\\"\([^\\]*\)\\".*$/\1/')
         echo "Output File Prefix: ${output_file_prefix}."
 
+        skip_download=$(echo ${result} | sed -e 's/^.*\\"skip_download\\":\s*\\"\([^\\]*\)\\".*$/\1/')
+        echo "Delete Files: ${skip_download}."
+        
+        delete_files=$(echo ${result} | sed -e 's/^.*\\"delete_files\\":\s*\\"\([^\\]*\)\\".*$/\1/')
+        echo "Delete Files: ${delete_files}."
+
         # if [ -n "$result" ] \
         # && [ -n "$receipt_handle" ] \
         # && [ -n "$input_folder" ] \
@@ -50,18 +56,21 @@ while [ /bin/true ]; do
         # && [ -n "$sequence_file_name" ] \
         # && [ -n "$output_file_prefix" ]; then
 
-        ./generate_video.sh --input-folder=$input_folder \
-                            --output-folder=$output_folder \
-                            --sequence-file-name=$sequence_file_name \
-                            --template-file-name=$template_file_name \
-                            --output-file-prefix=$output_file_prefix
-                            
-
+        # Deleting the message from the queue to allow for
+        # parallel builds
         echo "Deleting message..."
         aws sqs delete-message \
             --queue-url ${queue} \
             --region ${region} \
             --receipt-handle "${receipt_handle}"
+
+        ./generate_video.sh --input-folder=$input_folder \
+                            --output-folder=$output_folder \
+                            --sequence-file-name=$sequence_file_name \
+                            --template-file-name=$template_file_name \
+                            --output-file-prefix=$output_file_prefix \
+                            --skip-download=$skip_download \
+                            --delete-files="$delete_files"        
 
         # else
         #     echo "ERROR: Could not extract params from message from SQS message."
