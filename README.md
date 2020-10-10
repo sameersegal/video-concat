@@ -174,3 +174,5 @@ I found the following tutorials and articles very helfpul while working on this 
 7. [Why does AWS Lambda need to pass ecsTaskExecutionRole to ECS task](https://serverfault.com/questions/945596/why-does-aws-lambda-need-to-pass-ecstaskexecutionrole-to-ecs-task)
     * https://stackoverflow.com/questions/58686844/ecs-task-not-starting-stopped-cannotpullcontainererror-error-response-from
     * https://medium.com/@paweldudzinski/creating-aws-ecs-cluster-of-ec2-instances-with-terraform-893c15d1116
+8. [EFS and ECS](https://aws.amazon.com/blogs/containers/developers-guide-to-using-amazon-efs-with-amazon-ecs-and-aws-fargate-part-1/)
+9. [FFMPEG documentation]()

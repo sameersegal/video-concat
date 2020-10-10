@@ -30,6 +30,22 @@ resource "aws_ecs_task_definition" "task" {
   ]
   tags          = {}
   task_role_arn = aws_iam_role.task_role.arn
+
+  volume {
+    name = "scratch-storage"
+    # host_path = "/tmp/workdir/scratch"
+
+    efs_volume_configuration {
+      file_system_id = aws_efs_file_system.scratch.id
+      # root_directory          = "/"
+      transit_encryption = "ENABLED"
+      # transit_encryption_port = 2999
+      authorization_config {
+        access_point_id = aws_efs_access_point.scratch.id
+        #   iam             = "ENABLED"
+      }
+    }
+  }
 }
 
 resource "aws_ecs_service" "service" {
@@ -40,7 +56,7 @@ resource "aws_ecs_service" "service" {
   desired_count                      = 0
   enable_ecs_managed_tags            = false
   health_check_grace_period_seconds  = 0
-  launch_type = "FARGATE"
+  launch_type                        = "FARGATE"
 
   platform_version    = "1.4.0"
   scheduling_strategy = "REPLICA"
@@ -60,7 +76,6 @@ resource "aws_ecs_service" "service" {
       aws_subnet.main.id,
     ]
   }
-
 }
 
 resource "aws_cloudwatch_log_group" "log_group" {

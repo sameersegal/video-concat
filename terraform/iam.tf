@@ -61,7 +61,17 @@ resource "aws_iam_policy" "task_execution_policy" {
       "Effect": "Allow",
       "Action": "sqs:*",
       "Resource": "${aws_sqs_queue.queue.arn}"
-   }   
+   },
+   {
+      "Effect": "Allow",
+      "Action": [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientRootAccess",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:DescribeMountTargets"
+      ],
+      "Resource": "${aws_efs_file_system.scratch.arn}"
+  }   
   ]
 }
 EOF

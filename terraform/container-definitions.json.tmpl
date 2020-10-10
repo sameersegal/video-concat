@@ -22,7 +22,12 @@
                 "awslogs-stream-prefix": "ecs"
             }
         },
-        "mountPoints": [],        
+        "mountPoints": [
+            {
+                "containerPath":"/tmp/workdir/scratch",
+                "sourceVolume": "scratch-storage"
+            }
+        ],        
         "portMappings": [],
         "volumesFrom": []
     }
