@@ -75,7 +75,7 @@ then
     echo "Making space based on flag"
     find . -type f -not -name '*.ts' | xargs rm -rf
 else
-    echo "NOT making space based on flag"
+    echo "NOT making space based on flag"  
 fi
 
 echo "Check space #after delete"
