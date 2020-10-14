@@ -82,7 +82,7 @@ resource "aws_security_group" "efs" {
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
       self             = false
-      security_groups  = [aws_security_group.simple.id]
+      security_groups  = [aws_security_group.simple.id, aws_security_group.ec2.id]
     }
   ]
 
