@@ -13,12 +13,12 @@ resource "aws_ecs_cluster" "cluster" {
 
 }
 
-resource "aws_ecs_task_definition" "task" {
+resource "aws_ecs_task_definition" "download" {
   family = var.ecs_task_definition_family
-  container_definitions = templatefile("container-definitions.json.tmpl", {
-    docker_image   = var.docker_image
+  container_definitions = templatefile("download-container-definitions.json.tmpl", {
+    docker_image   = "${aws_ecr_repository.download.repository_url}:latest"
     log_group_name = aws_cloudwatch_log_group.log_group.name
-    queue_url      = aws_sqs_queue.queue.id
+    queue_url      = aws_sqs_queue.download.id
     region         = "ap-south-1"
   })
   cpu                = "4096"
@@ -61,7 +61,7 @@ resource "aws_ecs_service" "service" {
   platform_version    = "1.4.0"
   scheduling_strategy = "REPLICA"
   tags                = {}
-  task_definition     = aws_ecs_task_definition.task.arn
+  task_definition     = aws_ecs_task_definition.download.arn
 
   deployment_controller {
     type = "ECS"

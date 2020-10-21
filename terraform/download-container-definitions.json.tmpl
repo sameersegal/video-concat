@@ -1,6 +1,6 @@
 [
     {
-        "name": "ss-video-concate",
+        "name": "ss-video-concate-download",
         "cpu": 0,
         "environment": [            
             {
@@ -10,6 +10,10 @@
             {
                 "name": "V_REGION",
                 "value": ${jsonencode(region)}
+            },
+            {
+                "name": "V_MOUNT",
+                "value": "/root/scratch"
             }
         ],
         "essential": true,
@@ -24,7 +28,7 @@
         },
         "mountPoints": [
             {
-                "containerPath":"/tmp/workdir/scratch",
+                "containerPath":"/root/scratch",
                 "sourceVolume": "scratch-storage"
             }
         ],        

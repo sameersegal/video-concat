@@ -1,5 +1,5 @@
-resource "aws_ecr_repository" "repo" {
-  name                 = var.ecr_name
+resource "aws_ecr_repository" "download" {
+  name                 = "${var.ecr_name}-download"
   image_tag_mutability = "MUTABLE"
   tags                 = {}
 
@@ -8,6 +8,21 @@ resource "aws_ecr_repository" "repo" {
   }
 }
 
-output "docker_image_repo_url" {
-  value = aws_ecr_repository.repo.repository_url
+resource "aws_ecr_repository" "convert" {
+  name                 = "${var.ecr_name}-convert"
+  image_tag_mutability = "MUTABLE"
+  tags                 = {}
+
+  image_scanning_configuration {
+    scan_on_push = false
+  }
+}
+
+
+output "download_image_repo_url" {
+  value = aws_ecr_repository.download.repository_url
+}
+
+output "convert_image_repo_url" {
+  value = aws_ecr_repository.convert.repository_url
 }

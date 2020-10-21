@@ -2,6 +2,7 @@
 
 region=${V_REGION}
 queue=${V_QUEUE_URL}
+MOUNT=${V_MOUNT}
 
 # Fetch messages and render them until the queue is drained.
 while [ /bin/true ]; do
@@ -56,6 +57,40 @@ while [ /bin/true ]; do
         # && [ -n "$sequence_file_name" ] \
         # && [ -n "$output_file_prefix" ]; then
 
+        # if [ -z "$SKIP_DOWNLOAD" ] || [ "$SKIP_DOWNLOAD" != "true" ]; 
+        # then
+        #     mkdir -p "${MOUNT}/$OUTPUT"
+        #     cd "${MOUNT}/$OUTPUT"
+
+        #     if [ -n "$DELETE_FILES" ];
+        #     then
+        #         DELETE_FILES=`urldecode "$DELETE_FILES"`
+        #         echo $DELETE_FILES | xargs rm
+        #         echo "DELETED files $DELETE_FILES"
+        #     else        
+        #         echo "Did NOT DELETE files"
+        #     fi
+        
+        mkdir -p "${MOUNT}/$output_folder/raw"
+        cd "${MOUNT}/$output_folder/raw"
+        gdrive --service-account credentials.json download query "'$input_folder' in parents"  --skip
+        cd "${MOUNT}"
+
+        # else
+        #     cd "${MOUNT}/$OUTPUT"    
+
+        #     if [ -n "$DELETE_FILES" ];
+        #     then
+        #         DELETE_FILES=`urldecode "$DELETE_FILES"`
+        #         echo $DELETE_FILES | xargs rm
+        #         echo "DELETED files $DELETE_FILES"
+        #     else
+        #         echo "Did NOT DELETE files"
+        #     fi
+
+        #     echo "Not downloading file based on flag $SKIP_DOWNLOAD"
+        # fi
+
         # Deleting the message from the queue to allow for
         # parallel builds
         echo "Deleting message..."
@@ -63,14 +98,6 @@ while [ /bin/true ]; do
             --queue-url ${queue} \
             --region ${region} \
             --receipt-handle "${receipt_handle}"
-
-        ./generate_video.sh --input-folder=$input_folder \
-                            --output-folder=$output_folder \
-                            --sequence-file-name=$sequence_file_name \
-                            --template-file-name=$template_file_name \
-                            --output-file-prefix=$output_file_prefix \
-                            --skip-download=$skip_download \
-                            --delete-files="$delete_files"        
 
         # else
         #     echo "ERROR: Could not extract params from message from SQS message."

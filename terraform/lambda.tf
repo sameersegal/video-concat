@@ -13,9 +13,9 @@ resource "aws_lambda_function" "trigger" {
 
   environment {
     variables = {
-      QUEUE_URL      = aws_sqs_queue.queue.id
+      QUEUE_URL      = aws_sqs_queue.download.id
       CLUSTER_NAME   = aws_ecs_cluster.cluster.name
-      TASK_NAME      = "${aws_ecs_task_definition.task.family}:${aws_ecs_task_definition.task.revision}"
+      TASK_NAME      = "${aws_ecs_task_definition.download.family}:${aws_ecs_task_definition.download.revision}"
       SUBNET         = aws_subnet.main.id
       SECURITY_GROUP = aws_security_group.simple.id
     }
@@ -65,7 +65,7 @@ resource "aws_iam_policy" "lambda_logging" {
     {
       "Effect": "Allow",
       "Action": "sqs:*",
-      "Resource": "${aws_sqs_queue.queue.arn}"
+      "Resource": "${aws_sqs_queue.download.arn}"
    },
    {
       "Effect": "Allow",

@@ -60,7 +60,7 @@ resource "aws_iam_policy" "task_execution_policy" {
     {
       "Effect": "Allow",
       "Action": "sqs:*",
-      "Resource": "${aws_sqs_queue.queue.arn}"
+      "Resource": "${aws_sqs_queue.download.arn}"
    },
    {
       "Effect": "Allow",
