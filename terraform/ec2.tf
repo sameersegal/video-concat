@@ -28,63 +28,63 @@ resource "aws_security_group" "ec2" {
   }]
 }
 
-# resource "aws_key_pair" "mykeys" {
-#   key_name   = "mykeys"
-#   public_key = file("mykeys.pub")
-# }
+resource "aws_key_pair" "mykeys" {
+  key_name   = "mykeys"
+  public_key = file("mykeys.pub")
+}
 
-# resource "aws_iam_role" "maintainer-ec2" {
-#   name               = "maintainer-ec2"
-#   path               = "/"
-#   assume_role_policy = <<POLICY
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Effect": "Allow",
-#       "Principal": {
-#         "Service": "ec2.amazonaws.com"
-#       },
-#       "Action": "sts:AssumeRole"
-#     }
-#   ]
-# }
-# POLICY
-# }
+resource "aws_iam_role" "maintainer-ec2" {
+  name               = "maintainer-ec2"
+  path               = "/"
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "ec2.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+POLICY
+}
 
-# resource "aws_iam_policy" "maintainer-ec2-permissions" {
-#   name        = "maintainer-ec2-permissions"
-#   path        = "/"
-#   description = "Policy for EC2 instances to access EFS"
-#   policy      = <<POLICY
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#     {
-#       "Effect": "Allow",
-#       "Action": [
-#           "elasticfilesystem:ClientMount",
-#           "elasticfilesystem:ClientRootAccess",
-#           "elasticfilesystem:ClientWrite",
-#           "elasticfilesystem:DescribeMountTargets"
-#       ],
-#       "Resource": "${aws_efs_file_system.scratch.arn}"
-#   }   
-#   ]
-# }
-# POLICY
-# }
+resource "aws_iam_policy" "maintainer-ec2-permissions" {
+  name        = "maintainer-ec2-permissions"
+  path        = "/"
+  description = "Policy for EC2 instances to access EFS"
+  policy      = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientRootAccess",
+          "elasticfilesystem:ClientWrite",
+          "elasticfilesystem:DescribeMountTargets"
+      ],
+      "Resource": "${aws_efs_file_system.scratch.arn}"
+  }   
+  ]
+}
+POLICY
+}
 
-# resource "aws_iam_role_policy_attachment" "maintainer-ec2-policy-attachment" {
-#   role       = aws_iam_role.maintainer-ec2.name
-#   policy_arn = aws_iam_policy.maintainer-ec2-permissions.arn
-# }
+resource "aws_iam_role_policy_attachment" "maintainer-ec2-policy-attachment" {
+  role       = aws_iam_role.maintainer-ec2.name
+  policy_arn = aws_iam_policy.maintainer-ec2-permissions.arn
+}
 
 
-# resource "aws_iam_instance_profile" "access-efs" {
-#   name = "ec2-access-efs"
-#   role = aws_iam_role.maintainer-ec2.name
-# }
+resource "aws_iam_instance_profile" "access-efs" {
+  name = "ec2-access-efs"
+  role = aws_iam_role.maintainer-ec2.name
+}
 
 # resource "aws_instance" "maintainer" {
 
@@ -120,3 +120,52 @@ resource "aws_security_group" "ec2" {
 # output "ec2_public_ip" {
 #   value = aws_instance.maintainer.public_ip
 # }
+
+resource aws_instance "gpu" {
+  ami                         = "ami-0faf7ae313dd51ccc"
+  associate_public_ip_address = true
+  availability_zone           = "ap-south-1c"
+  cpu_core_count              = 2
+  cpu_threads_per_core        = 2
+  disable_api_termination     = false
+  ebs_optimized               = true
+  get_password_data           = false
+  hibernation                 = false
+  iam_instance_profile        = "ec2-access-efs"
+
+
+  instance_type      = "g4dn.xlarge"
+  ipv6_address_count = 0
+  ipv6_addresses     = []
+  key_name           = "mykeys"
+  monitoring         = false
+
+  security_groups   = []
+  source_dest_check = true
+  subnet_id         = "subnet-04e56476ab88f3c77"
+  tenancy           = "default"
+  volume_tags       = {}
+  vpc_security_group_ids = [
+    "sg-0af7ef765f357c3aa",
+  ]
+
+  tags = {
+    Name = "ECS Container Instance"
+  }
+
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_put_response_hop_limit = 1
+    http_tokens                 = "optional"
+  }
+
+  root_block_device {
+    delete_on_termination = true
+    encrypted             = false
+    iops                  = 150
+    volume_size           = 50
+    volume_type           = "gp2"
+  }
+
+  timeouts {}
+}

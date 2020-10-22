@@ -72,6 +72,7 @@ while [ /bin/true ]; do
         #     fi
         
         mkdir -p "${MOUNT}/$output_folder/raw"
+        mkdir -p "${MOUNT}/$output_folder/processed"
         cd "${MOUNT}/$output_folder/raw"
         gdrive --service-account credentials.json download query "'$input_folder' in parents"  --skip
         cd "${MOUNT}"

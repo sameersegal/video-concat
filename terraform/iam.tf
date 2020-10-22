@@ -51,7 +51,7 @@ resource "aws_iam_role" "execution_role" {
 resource "aws_iam_policy" "task_execution_policy" {
   name        = "task_execution_policy"
   path        = "/"
-  description = "IAM policy for the task - SQS"
+  description = "IAM policy for the task - SQS, S3"
 
   policy = <<EOF
 {
@@ -60,7 +60,12 @@ resource "aws_iam_policy" "task_execution_policy" {
     {
       "Effect": "Allow",
       "Action": "sqs:*",
-      "Resource": "${aws_sqs_queue.download.arn}"
+      "Resource": ["${aws_sqs_queue.download.arn}","${aws_sqs_queue.convert.arn}"]
+   },
+   {
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "${aws_s3_bucket.bucket.arn}"
    },
    {
       "Effect": "Allow",

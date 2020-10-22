@@ -1,3 +1,8 @@
+variable "project_name" {
+  type        = string
+  description = "Project Name. All others will be a derivation of this"
+}
+
 variable "ecr_name" {
   type        = string
   description = "Elastic Container Repository Name"

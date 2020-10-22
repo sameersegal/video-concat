@@ -2,6 +2,8 @@
 
 region=${V_REGION}
 queue=${V_QUEUE_URL}
+MOUNT=${V_MOUNT}
+s3_bucket=${V_BUCKET}
 
 # Fetch messages and render them until the queue is drained.
 while [ /bin/true ]; do
@@ -28,26 +30,11 @@ while [ /bin/true ]; do
         receipt_handle=$(echo ${result} | sed -e 's/^.*"\([^"]*\)"\s*\]$/\1/')
         echo "Receipt handle: ${receipt_handle}."
 
-        input_folder=$(echo ${result} | sed -e 's/^.*\\"input_folder\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Input Folder: ${input_folder}."
+        file=$(echo ${result} | sed -e 's/^.*\\"file\\":\s*\\"\([^\\]*\)\\".*$/\1/')
+        echo "File: ${file}."  
 
-        output_folder=$(echo ${result} | sed -e 's/^.*\\"output_folder\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Output Folder: ${output_folder}."
-
-        sequence_file_name=$(echo ${result} | sed -e 's/^.*\\"sequence_file_name\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Sequence File Name: ${sequence_file_name}."
-
-        template_file_name=$(echo ${result} | sed -e 's/^.*\\"template_file_name\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Template File Name: ${template_file_name}."
-
-        output_file_prefix=$(echo ${result} | sed -e 's/^.*\\"output_file_prefix\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Output File Prefix: ${output_file_prefix}."
-
-        skip_download=$(echo ${result} | sed -e 's/^.*\\"skip_download\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Delete Files: ${skip_download}."
-        
-        delete_files=$(echo ${result} | sed -e 's/^.*\\"delete_files\\":\s*\\"\([^\\]*\)\\".*$/\1/')
-        echo "Delete Files: ${delete_files}."
+        project=$(echo ${result} | sed -e 's/^.*\\"project\\":\s*\\"\([^\\]*\)\\".*$/\1/')
+        echo "Project: ${project}."        
 
         # if [ -n "$result" ] \
         # && [ -n "$receipt_handle" ] \
@@ -56,21 +43,21 @@ while [ /bin/true ]; do
         # && [ -n "$sequence_file_name" ] \
         # && [ -n "$output_file_prefix" ]; then
 
+        mkdir -p "${MOUNT}/$project/processed"
+        cd "${MOUNT}/$project/processed"
+        filename=$(basename -- "$file")
+        time ffmpeg -hide_banner -i "../raw/$file" -c:a copy -c:v h264_nvenc -b:v 5M "${filename}.mp4"
+        ffprobe -hide_banner -i "${filename}.mp4"
+        aws s3 cp "${filename}.mp4" "s3://${s3_bucket}/$project/"
+        cd "${MOUNT}"
+
         # Deleting the message from the queue to allow for
         # parallel builds
         echo "Deleting message..."
         aws sqs delete-message \
             --queue-url ${queue} \
             --region ${region} \
-            --receipt-handle "${receipt_handle}"
-
-        ./generate_video.sh --input-folder=$input_folder \
-                            --output-folder=$output_folder \
-                            --sequence-file-name=$sequence_file_name \
-                            --template-file-name=$template_file_name \
-                            --output-file-prefix=$output_file_prefix \
-                            --skip-download=$skip_download \
-                            --delete-files="$delete_files"        
+            --receipt-handle "${receipt_handle}"        
 
         # else
         #     echo "ERROR: Could not extract params from message from SQS message."

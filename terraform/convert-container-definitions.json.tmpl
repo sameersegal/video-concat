@@ -1,0 +1,48 @@
+[
+    {
+        "name": "ss-video-concate-convert",
+        "cpu": 0,
+        "environment": [            
+            {
+                "name": "V_QUEUE_URL",
+                "value": ${jsonencode(queue_url)}
+            },
+            {
+                "name": "V_REGION",
+                "value": ${jsonencode(region)}
+            },
+            {
+                "name": "V_BUCKET",
+                "value": ${jsonencode(bucket)}
+            },
+            {
+                "name": "V_MOUNT",
+                "value": "/tmp/workdir/scratch"
+            }
+        ],
+        "essential": true,
+        "image": ${jsonencode(docker_image)},
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": ${jsonencode(log_group_name)},
+                "awslogs-region": "ap-south-1",
+                "awslogs-stream-prefix": "ecs"
+            }
+        },
+        "mountPoints": [
+            {
+                "containerPath":"/tmp/workdir/scratch",
+                "sourceVolume": "scratch-storage"
+            }
+        ],        
+        "portMappings": [],
+        "volumesFrom": [],
+        "resourceRequirements" : [
+            {
+                "type" : "GPU", 
+                "value" : "1"
+            }
+        ]
+    }
+]
