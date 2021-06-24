@@ -97,7 +97,7 @@ do
     else
         # variable substitution into template. Remember if there is input &, it needs to be escaped \& otherwise sed treats & as a whole match
         t=`echo "$TEMPLATE" | sed 's@$i@'"$i"'@g' | sed 's@$arg1@'"$arg1"'@g' | sed 's@$arg2@'"$arg2"'@g' | sed 's@$arg3@'"$arg3"'@g' | sed 's@$arg4@'"$arg4"'@g' | sed 's@$arg5@'"$arg5"'@g' | sed 's@$arg6@'"$arg6"'@g' | sed 's@$arg7@'"$arg7"'@g' | sed 's@$arg8@'"$arg8"'@g' | sed 's@$arg9@'"$arg9"'@g' | sed 's@$arg10@'"$arg10"'@g'`
-        echo "$t"
+        #echo "$t"
         eval "$t"
     fi    
 

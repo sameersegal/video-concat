@@ -1,0 +1,21 @@
+if [[ -z "$arg3" ]];
+then 
+
+    ffmpeg -hide_banner -i "$arg1" -t 10 \
+    -c:a aac -c:v libx264 -crf 23 \
+    -filter_complex "[0:v]scale=1920x1080:force_original_aspect_ratio=decrease,pad=1920:1080:0:0:color=black, \
+    setdar=16/9,setsar=1/1,fps=fps=30,format=yuv420p; \
+    [0:a]loudnorm=i=-24:tp=-2:lra=7" \
+    "$i.ts"
+
+else
+
+    ffmpeg -hide_banner -i "$arg1" -t 10 -i $arg3 -i $arg5 \
+    -filter_complex "[0:v]scale=1600:900:force_original_aspect_ratio=decrease,pad=1920:1080:320:0:color=$arg4,setdar=16/9,setsar=1/1,fps=fps=30,format=yuv420p[V1]; \
+    [V1][1:v]overlay=(overlay_w/2)*-1+40:main_h-(overlay_h/2)-40[V2]; \
+    [V2][2:v]overlay=0:450-(overlay_h/2)[V3]; \
+    [V3]drawtext=fontfile=./Sanchez-Regular.ttf: text='$arg2': fontcolor=white: fontsize=64: x=(w-text_w)/2: y=(h-90-(text_h/2)); \
+    [0:a]loudnorm=i=-24:tp=-2:lra=7" \
+    -c:a aac -c:v libx264 -crf 23 \
+    "$i.ts"
+fi

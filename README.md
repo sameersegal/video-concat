@@ -99,7 +99,10 @@ I assume you have an account with AWS and have a brief understanding of AWS, Ter
                 "input_folder": "XXXXXXXXXXTgtj9wZG3HIcb6b1dLLqg",
                 "output_folder": "XXXXXXXXXjjLvduXwQM4j5lPHY7_6z6a",
                 "sequence_file_name": "sequence",
-                "output_file_prefix": "Short-Video-"
+                "template_file_name": "template",
+                "output_file_prefix": "Short-Video-",
+		"skip_download":"false",
+		"delete_files":"template%20sequence"
             }'
     ```
     4. Check CloudWatch logs to see if there are any errors in Lambda or ECS. If not, you will see your video in the `output` folder
@@ -160,6 +163,7 @@ else
     "$i.ts"
 fi
 ```
+More templates [here](templates/)
 
 ### Further Reading
 

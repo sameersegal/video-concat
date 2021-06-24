@@ -1,0 +1,20 @@
+len=`echo $arg2 | wc -c`
+if [[ -z "$arg2" ]] || [[ $len -lt 3 ]];
+then 
+    ffmpeg -hide_banner -i "$arg1"  \
+    -filter_complex "[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,setdar=16/9,setsar=1/1,fps=fps=30,format=yuv420p; \
+    [0:a]loudnorm=i=-24:tp=-2:lra=7" \
+    -c:a aac -c:v libx264 -crf 23 \
+    -b:v 10M -b:a 100k \
+    "$i.ts"
+else
+    ffmpeg -hide_banner -loop 1 -framerate 30 -i Background.png \
+    -i "$arg1"  \
+    -filter_complex "[1:v]scale=1920:1080:force_original_aspect_ratio=decrease,setdar=16/9,setsar=1/1,fps=fps=30,format=yuv420p[V1]; \
+    [0:v][V1]overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2:shortest=1[V2]; \
+    [V2]drawtext=fontfile=./Caveat-Bold.ttf: text='$arg2': fontcolor=$arg3: fontsize=128: x=(w-text_w)/2: y=(h-90-(text_h/2)); \
+    [1:a]loudnorm=i=-24:tp=-2:lra=7" \
+    -c:a aac -c:v libx264 -crf 23 \
+    -b:v 10M -b:a 100k \
+    "$i.ts"
+fi
